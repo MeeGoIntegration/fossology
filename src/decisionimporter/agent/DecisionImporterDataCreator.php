@@ -276,9 +276,6 @@ class DecisionImporterDataCreator
                                       DecisionImporterAgent &$agentObj,
                                       string $agentName, int $jobId): void
   {
-    if (!$this->agentDao->arsTableExists($agentName)) {
-      throw new UnexpectedValueException("No agent '$agentName' exists on server.");
-    }
     $latestAgentId = $this->agentDao->getCurrentAgentId($agentName);
     $this->createCxJobs($agentName, $jobId, $latestAgentId);
 
@@ -293,6 +290,10 @@ class DecisionImporterDataCreator
     $cxList = $reportData->$cxListMethod();
     $decisionList = $reportData->$decisionListMethod();
     $eventList = $reportData->$eventListMethod();
+
+    if (($cxList or $decisionList or $eventList) && !$this->agentDao->arsTableExists($agentName)) {
+      throw new UnexpectedValueException("No agent '$agentName' exists on server.");
+    }
 
     $cxExistSql = "SELECT " . $agentName . "_pk FROM $agentName WHERE pfile_fk = $1 AND agent_fk = $2 AND hash = $3;";
     $cxExistStatement = __METHOD__ . ".$agentName" . "Exist";
