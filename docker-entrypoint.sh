@@ -24,8 +24,13 @@ user=$db_user;
 password=$db_password;
 EOM
 
-sed -i 's/address = .*/address = '"${FOSSOLOGY_SCHEDULER_HOST:-localhost}"'/' \
-    /usr/local/etc/fossology/fossology.conf
+scheduler="${FOSSOLOGY_SCHEDULER_HOST:-localhost}"
+system_conf=/usr/local/etc/fossology/fossology.conf
+
+# Do not touch the config unless needed - allow to bind it from host
+if ! grep -q -F --line-regexp -e "address = ${scheduler}" "$system_conf"; then
+    sed -i 's/address = .*/address = '"${scheduler}"'/' "$system_conf"
+fi
 
 # Startup DB if needed or wait for external DB
 if [[ $db_host == 'localhost' ]]; then
