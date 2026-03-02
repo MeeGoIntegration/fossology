@@ -118,3 +118,8 @@ COPY --from=builder /usr/local/ /usr/local/
 RUN /usr/local/lib/fossology/fo-postinstall --agent --common --scheduler-only \
      --web-only --no-running-database --python-experimental \
  && rm -rf /var/lib/apt/lists/*
+
+RUN ln -s --target-directory /etc/apache2/mods-enabled/ \
+        ../mods-available/authnz_ldap.load \
+        ../mods-available/ldap.load \
+        ../mods-available/ldap.conf \
