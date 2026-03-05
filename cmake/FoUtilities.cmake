@@ -18,6 +18,11 @@ macro(getGitVersion)
         OUTPUT_VARIABLE VERSION_GIT
         ERROR_QUIET
         OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    # Drop possible slash-delimited prefix and '+gitNNN' suffix in tag name
+    string(REGEX REPLACE "^.*/" "" VERSION_GIT "${VERSION_GIT}")
+    string(REGEX REPLACE "\\+git.*$" "" VERSION_GIT "${VERSION_GIT}")
+
     string(REPLACE "-" ";" FO_VERSION_GIT "${VERSION_GIT}")
     list(LENGTH FO_VERSION_GIT VAR_LEN)
     # At tag (4.0.0), just add .0 at end
