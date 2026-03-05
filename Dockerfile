@@ -54,6 +54,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 
 COPY . .
 
+# The .git dir is absorbed by the git superproject - get it from there
+RUN rm .git
+COPY --from=gitdir . .git/
+RUN sed -i '/worktree =/d' .git/config
+
 RUN cmake -DCMAKE_BUILD_TYPE=MinSizeRel -S. -B./build -G Ninja \
  && cmake --build ./build --parallel \
  && cmake --install build
